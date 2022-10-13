@@ -25,6 +25,7 @@ export const serverSchema = z.object({
   EMAIL_SERVER_PASSWORD: z.string().min(8),
   EMAIL_SERVER_PORT: z.string().regex(/^\d+$/).transform(Number),
   EMAIL_FROM: z.string().email(),
+  WORKSPACE_HOSTNAME: z.string().regex(validHostnameRegex),
 });
 
 /**

@@ -14,6 +14,12 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    signIn({ user: { email } }) {
+      return (
+        email?.toLocaleLowerCase().trim().endsWith(env.WORKSPACE_HOSTNAME) ??
+        false
+      );
+    },
   },
   // Configure one or more authentication providers
   adapter: PrismaAdapter(prisma),
