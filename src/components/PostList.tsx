@@ -28,13 +28,20 @@ type PostItemProps = {
 };
 
 function PostItem({ email, content, createdAt }: PostItemProps) {
-  const secondsAgo = createdAt.getTime() / 1000 - new Date().getTime() / 1000;
   return (
     <div className="card w-full bg-base-100 shadow-xl">
       <div className="card-body">
         <h2 className="card-title">{email}</h2>
         <p>{content}</p>
-        <span className="text-right opacity-50">{timeAgo(createdAt)} ago</span>
+        <div className="flex justify-end">
+          <span
+            // dateTime={createdAt.toISOString()}
+            className="tooltip opacity-50"
+            data-tip={createdAt.toLocaleString()}
+          >
+            {timeAgo(createdAt)}
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -47,23 +54,41 @@ function timeAgo(date: Date) {
   let interval = Math.floor(seconds / 31536000);
 
   if (interval > 1) {
-    return interval + " years";
+    return new Intl.RelativeTimeFormat(undefined, { numeric: "auto" }).format(
+      -interval,
+      "years"
+    );
   }
   interval = Math.floor(seconds / 2592000);
   if (interval > 1) {
-    return interval + " months";
+    return new Intl.RelativeTimeFormat(undefined, { numeric: "auto" }).format(
+      -interval,
+      "months"
+    );
   }
   interval = Math.floor(seconds / 86400);
   if (interval > 1) {
-    return interval + " days";
+    return new Intl.RelativeTimeFormat(undefined, { numeric: "auto" }).format(
+      -interval,
+      "days"
+    );
   }
   interval = Math.floor(seconds / 3600);
   if (interval > 1) {
-    return interval + " hours";
+    return new Intl.RelativeTimeFormat(undefined, { numeric: "auto" }).format(
+      -interval,
+      "hours"
+    );
   }
   interval = Math.floor(seconds / 60);
   if (interval > 1) {
-    return interval + " minutes";
+    return new Intl.RelativeTimeFormat(undefined, { numeric: "auto" }).format(
+      -interval,
+      "minutes"
+    );
   }
-  return Math.floor(seconds) + " seconds";
+  return new Intl.RelativeTimeFormat(undefined, { numeric: "auto" }).format(
+    -seconds,
+    "seconds"
+  );
 }
