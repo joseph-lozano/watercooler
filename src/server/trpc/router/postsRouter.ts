@@ -6,6 +6,9 @@ export const postsRouter = router({
     return ctx.prisma.post.findMany({
       orderBy: [{ createdAt: "desc" }],
       take: 20,
+      include: {
+        user: { select: { email: true } },
+      },
     });
   }),
   createPost: protectedProcedure
