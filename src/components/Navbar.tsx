@@ -12,7 +12,7 @@ export default function Navbar() {
         <a className="btn btn-ghost text-xl normal-case">{workspaceName}</a>
       </div>
       <div className="flex-none gap-2">
-        <div className="dropdown-end dropdown">
+        <div className="dropdown dropdown-end">
           <label tabIndex={0} className="avatar btn btn-ghost btn-circle">
             <div className="w-10 rounded-full">
               <Image

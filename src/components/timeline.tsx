@@ -28,18 +28,20 @@ function PostInput() {
   const { data: sessionData } = useSession();
   const utils = trpc.useContext();
   const { mutate } = trpc.posts.createPost.useMutation({
-    onMutate: async (newPost) => {
+    onMutate: async (createdPost) => {
       utils.posts.getRecentPosts.setData((posts) => {
+        const user = sessionData?.user;
+        if (!user || !user.email) return [];
+        const newPost = {
+          id: new Date().getTime().toString(),
+          user: { email: user.email },
+          userId: user.id,
+          createdAt: new Date(),
+          ...createdPost,
+        };
         reset();
         if (!posts) return [newPost];
-        return [
-          {
-            user: { email: sessionData?.user?.email },
-            createdAt: new Date(),
-            ...newPost,
-          },
-          ...posts,
-        ];
+        return [newPost, ...posts];
       });
     },
     onSuccess: () => {
