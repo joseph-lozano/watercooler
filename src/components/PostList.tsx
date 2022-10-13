@@ -9,14 +9,21 @@ export default function PostList() {
   }
 
   return (
-    <>
+    <div className="flex w-full flex-col space-y-5">
       {posts.map((post) => (
         <PostItem key={post.id} post={post} />
       ))}
-    </>
+    </div>
   );
 }
 
 function PostItem({ post }: { post: Post }) {
-  return null;
+  return (
+    <div className="card w-full bg-base-100 shadow-xl">
+      <div className="card-body">
+        <h2 className="card-title">Username</h2>
+        <p>{post.content}</p>
+      </div>
+    </div>
+  );
 }

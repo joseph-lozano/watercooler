@@ -1,8 +1,3 @@
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <h1>Thisis the laout</h1>
-      {children}
-    </>
-  );
+  return <div className="min-h-screen bg-base-200 pb-16">{children}</div>;
 }

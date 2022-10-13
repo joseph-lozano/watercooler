@@ -18,10 +18,13 @@ module.exports = {
       {
         corporate: {
           ...corporateTheme,
-          "base-content": colors.slate["800"],
           primary: colors.sky["600"],
           secondary: colors.emerald["600"],
           accent: colors.indigo["500"],
+          "base-100": colors.gray["50"],
+          "base-200": colors.gray["200"],
+          "base-300": colors.gray["400"],
+          "base-content": colors.gray["800"],
         },
         business: {
           ...businessTheme,

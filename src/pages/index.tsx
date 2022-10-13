@@ -16,7 +16,9 @@ const Home: NextPage = () => {
           <meta name="description" content="Your workspace watercooler" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
-        <Timeline />
+        <div className="flex justify-center">
+          <Timeline />
+        </div>
       </>
     );
   }
