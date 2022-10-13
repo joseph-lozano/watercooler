@@ -5,6 +5,10 @@ import { z } from "zod";
  * Specify your server-side environment variables schema here.
  * This way you can ensure the app isn't built with invalid env vars.
  */
+
+const validHostnameRegex =
+  /^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]).)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9-]*[A-Za-z0-9])$/;
+
 export const serverSchema = z.object({
   DATABASE_URL: z.string().url(),
   NODE_ENV: z.enum(["development", "test", "production"]),
@@ -14,10 +18,13 @@ export const serverSchema = z.object({
     // Since NextAuth automatically uses the VERCEL_URL if present.
     (str) => process.env.VERCEL_URL ?? str,
     // VERCEL_URL doesnt include `https` so it cant be validated as a URL
-    process.env.VERCEL ? z.string() : z.string().url(),
+    process.env.VERCEL ? z.string() : z.string().url()
   ),
-  DISCORD_CLIENT_ID: z.string(),
-  DISCORD_CLIENT_SECRET: z.string(),
+  EMAIL_SERVER_HOST: z.string().regex(validHostnameRegex),
+  EMAIL_SERVER_USER: z.string().email(),
+  EMAIL_SERVER_PASSWORD: z.string().min(8),
+  EMAIL_SERVER_PORT: z.string().regex(/^\d+$/).transform(Number),
+  EMAIL_FROM: z.string().email(),
 });
 
 /**
