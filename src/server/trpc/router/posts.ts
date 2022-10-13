@@ -2,6 +2,12 @@ import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 
 export const postsRouter = router({
+  getRecentPosts: protectedProcedure.query(({ ctx }) => {
+    return ctx.prisma.post.findMany({
+      orderBy: [{ createdAt: "desc" }],
+      take: 20,
+    });
+  }),
   createPost: protectedProcedure
     .input(z.object({ content: z.string().min(1) }))
     .mutation(({ input, ctx }) => {

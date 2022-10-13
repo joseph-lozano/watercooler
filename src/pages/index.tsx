@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
-import Timeline from "../components/timeline";
+import Timeline from "../components/Timeline";
 import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
