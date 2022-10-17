@@ -1,5 +1,6 @@
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import { env } from "../env/client.mjs";
 
 const workspaceName = env.NEXT_PUBLIC_WORKSPACE_NAME;
@@ -28,10 +29,10 @@ export default function Navbar() {
             className="dropdown-content menu rounded-box menu-compact mt-3 w-52 bg-base-100 p-2 shadow"
           >
             <li>
-              <a className="justify-between">
+              <Link href="/settings/profile" className="justify-between">
                 Profile
                 <span className="badge">New</span>
-              </a>
+              </Link>
             </li>
             <li>
               <a>Settings</a>

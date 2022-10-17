@@ -23,4 +23,7 @@ export default defineNextConfig({
   images: {
     domains: ["robohash.org"],
   },
+  experimental: {
+    newNextLinkBehavior: true,
+  },
 });
