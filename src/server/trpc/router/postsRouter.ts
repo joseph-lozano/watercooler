@@ -3,7 +3,6 @@ import { protectedProcedure, router } from "../trpc";
 
 export const postsRouter = router({
   getRecentPosts: protectedProcedure.query(({ ctx }) => {
-    console.log("FETCHING ALL");
     return ctx.prisma.post.findMany({
       orderBy: [{ createdAt: "desc" }],
       take: 20,
@@ -14,7 +13,7 @@ export const postsRouter = router({
   }),
   createPost: protectedProcedure
     .input(z.object({ content: z.string().min(1) }))
-    .mutation(async ({ input, ctx }) => {
+    .mutation(({ input, ctx }) => {
       const userId = ctx.session.user.id;
       return ctx.prisma.post.create({
         data: {
