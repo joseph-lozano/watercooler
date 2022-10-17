@@ -27,7 +27,7 @@ function PostInput() {
   const { reset, register, handleSubmit } = useForm<Inputs>();
   const { data: sessionData } = useSession();
   const utils = trpc.useContext();
-  const { mutate } = trpc.posts.createPost.useMutation({
+  const { mutate, status } = trpc.posts.createPost.useMutation({
     onMutate: async (createdPost) => {
       utils.posts.getRecentPosts.setData((posts) => {
         const user = sessionData?.user;
@@ -56,6 +56,7 @@ function PostInput() {
       onSubmit={handleSubmit(submitPost)}
       className="flex w-full flex-col items-end space-y-5"
     >
+    <span className="text-3xl">{status}</span>
       <textarea
         placeholder="What's on your mind?"
         className="textarea textarea-primary h-32 w-full resize-none text-xl"
