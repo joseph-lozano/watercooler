@@ -3,7 +3,7 @@ import { protectedProcedure, router } from "../trpc";
 
 export const postsRouter = router({
   getRecentPosts: protectedProcedure.query(({ ctx }) => {
-      console.log("FETCHING ALL")
+    console.log("FETCHING ALL");
     return ctx.prisma.post.findMany({
       orderBy: [{ createdAt: "desc" }],
       take: 20,

@@ -56,7 +56,7 @@ function PostInput() {
       onSubmit={handleSubmit(submitPost)}
       className="flex w-full flex-col items-end space-y-5"
     >
-    <span className="text-3xl">{status}</span>
+      <span className="text-3xl">{status}</span>
       <textarea
         placeholder="What's on your mind?"
         className="textarea textarea-primary h-32 w-full resize-none text-xl"
