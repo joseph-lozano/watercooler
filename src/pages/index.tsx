@@ -5,7 +5,6 @@ import Timeline from "../components/Timeline";
 import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
-  const hello = trpc.foo.hello.useQuery({ text: "from tRPC" });
   const { status } = useSession();
 
   if (status == "authenticated") {
@@ -31,9 +30,6 @@ const Home: NextPage = () => {
       </Head>
       <main className="container mx-auto flex min-h-screen flex-col items-center justify-center p-4">
         <h1 className="text-5xl font-bold text-primary">Watercooler</h1>
-        <div className="">
-          {hello.data ? <p>{hello.data.greeting}</p> : <p>Loading..</p>}
-        </div>
         <AuthShowcase />
       </main>
     </>

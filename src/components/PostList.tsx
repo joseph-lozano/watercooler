@@ -12,7 +12,7 @@ export default function PostList() {
       {posts.map((post) => (
         <PostItem
           key={post.id}
-          email={post.user.email}
+          email={post.user.email ?? ""}
           content={post.content}
           createdAt={post.createdAt}
         />

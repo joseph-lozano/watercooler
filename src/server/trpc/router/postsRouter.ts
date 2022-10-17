@@ -20,6 +20,9 @@ export const postsRouter = router({
           content: input.content,
           userId: userId,
         },
+        include: {
+          user: { select: { email: true } },
+        },
       });
     }),
 });
