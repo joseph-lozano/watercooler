@@ -12,7 +12,12 @@ export default function PostList() {
       {posts.map((post) => (
         <PostItem
           key={post.id}
-          email={post.user.email ?? ""}
+          author={
+            post.user.userProfile?.displayName ||
+            post.user.userProfile?.fullName ||
+            post.user.email ||
+            ""
+          }
           content={post.content}
           createdAt={post.createdAt}
         />
@@ -22,20 +27,19 @@ export default function PostList() {
 }
 
 type PostItemProps = {
-  email: string;
+  author: string;
   content: string;
   createdAt: Date;
 };
 
-function PostItem({ email, content, createdAt }: PostItemProps) {
+function PostItem({ author, content, createdAt }: PostItemProps) {
   return (
     <div className="card w-full bg-base-100 shadow-xl">
       <div className="card-body">
-        <h2 className="card-title">{email}</h2>
+        <h2 className="card-title">{author}</h2>
         <p>{content}</p>
         <div className="flex justify-end">
           <span
-            // dateTime={createdAt.toISOString()}
             className="tooltip opacity-50"
             data-tip={createdAt.toLocaleString()}
           >

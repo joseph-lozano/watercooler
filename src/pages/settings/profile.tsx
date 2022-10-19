@@ -1,7 +1,25 @@
 import { useForm } from "react-hook-form";
+import { trpc } from "../../utils/trpc";
+
+type FormInputs = {
+  fullName: string;
+  displayName: string;
+  namePronunciation: string;
+  title: string;
+  pronouns: string;
+  bio: string;
+};
 
 export default function SettingsProfilePage() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, reset } = useForm<FormInputs>();
+  trpc.userSettings.getUserSettingsProfile.useQuery(undefined, {
+    onSuccess(data) {
+      if (!data) return;
+      reset(data);
+    },
+  });
+  const { mutate } = trpc.userSettings.upsertUserSettingsProfile.useMutation();
+
   return (
     <>
       <div className="py-10"></div>
@@ -9,7 +27,7 @@ export default function SettingsProfilePage() {
         <div className="card w-full max-w-2xl flex-shrink-0 bg-base-100 shadow-2xl">
           <div className="card-body">
             <div className="card-title">Profile Settings</div>
-            <form onSubmit={handleSubmit((data) => console.log({ data }))}>
+            <form onSubmit={handleSubmit((data) => mutate(data))}>
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Full Name</span>
@@ -42,7 +60,7 @@ export default function SettingsProfilePage() {
                 <input
                   type="text"
                   className="input input-bordered"
-                  placeholder="Name pronounciation"
+                  placeholder="Name pronunciation"
                   {...register("namePronunciation")}
                 />
               </div>

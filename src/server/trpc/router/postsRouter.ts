@@ -7,7 +7,12 @@ export const postsRouter = router({
       orderBy: [{ createdAt: "desc" }],
       take: 20,
       include: {
-        user: { select: { email: true } },
+        user: {
+          select: {
+            email: true,
+            userProfile: { select: { fullName: true, displayName: true } },
+          },
+        },
       },
     });
   }),
@@ -21,7 +26,12 @@ export const postsRouter = router({
           userId: userId,
         },
         include: {
-          user: { select: { email: true } },
+          user: {
+            select: {
+              email: true,
+              userProfile: { select: { fullName: true, displayName: true } },
+            },
+          },
         },
       });
     }),

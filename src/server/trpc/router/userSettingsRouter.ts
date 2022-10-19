@@ -12,12 +12,12 @@ export const userSettingsRouter = router({
   upsertUserSettingsProfile: protectedProcedure
     .input(
       z.object({
-        fullName: z.string().nullish(),
+        fullName: z.string(),
         displayName: z.string(),
         bio: z.string(),
         title: z.string(),
         pronouns: z.string(),
-        namePronounciation: z.string(),
+        namePronunciation: z.string(),
       })
     )
     .mutation(({ input, ctx }) => {

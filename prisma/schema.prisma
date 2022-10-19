@@ -47,15 +47,15 @@ model Session {
 }
 
 model User {
-  id            String        @id @default(cuid())
+  id            String       @id @default(cuid())
   name          String?
-  email         String?       @unique
+  email         String?      @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
-  Post          Post[]
-  UserProfile   UserProfile[]
+  posts         Post[]
+  userProfile   UserProfile?
 }
 
 model VerificationToken {
@@ -67,13 +67,13 @@ model VerificationToken {
 }
 
 model UserProfile {
-  id                String  @id @default(cuid())
-  fullName          String?
-  displayName       String?
-  bio               String?
-  title             String?
-  pronouns          String?
-  nameProncuniation String?
-  userId            String  @unique
-  user              User    @relation(onDelete: Cascade, fields: [userId], references: [id])
+  id                String @id @default(cuid())
+  fullName          String @default("")
+  displayName       String @default("")
+  bio               String @default("")
+  title             String @default("")
+  pronouns          String @default("")
+  namePronunciation String @default("")
+  userId            String @unique
+  user              User   @relation(fields: [userId], references: [id])
 }
