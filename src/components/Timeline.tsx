@@ -1,4 +1,3 @@
-import { useSession } from "next-auth/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { trpc } from "../utils/trpc";
 import PostList from "./PostList";
@@ -24,26 +23,9 @@ export default function Timeline() {
 }
 
 function PostInput() {
-  const { reset, register, handleSubmit } = useForm<Inputs>();
-  const { data: sessionData } = useSession();
+  const { register, handleSubmit } = useForm<Inputs>();
   const utils = trpc.useContext();
-  const { mutate, status } = trpc.posts.createPost.useMutation({
-    onMutate: async (createdPost) => {
-      utils.posts.getRecentPosts.setData((posts) => {
-        const user = sessionData?.user;
-        if (!user || !user.email) return [];
-        const newPost = {
-          id: new Date().getTime().toString(),
-          user: { email: user.email },
-          userId: user.id,
-          createdAt: new Date(),
-          ...createdPost,
-        };
-        reset();
-        if (!posts) return [newPost];
-        return [newPost, ...posts];
-      });
-    },
+  const { mutate, isLoading } = trpc.posts.createPost.useMutation({
     onSuccess: () => {
       utils.posts.invalidate();
     },
@@ -61,7 +43,11 @@ function PostInput() {
         className="textarea textarea-primary h-32 w-full resize-none text-xl"
         {...register("content")}
       />
-      <button type="submit" className="btn btn-primary btn-lg w-full">
+      <button
+        type="submit"
+        className="btn btn-primary btn-lg w-full"
+        disabled={isLoading}
+      >
         Post
       </button>
     </form>
