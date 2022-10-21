@@ -1,0 +1,67 @@
+const cheerio = require("cheerio");
+const LINK_REGEX =
+  /(?:(?:https?):\/\/|\b(?:[a-z\d]+\.))(?:(?:[^\s()<>]+|\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))?\))+(?:\((?:[^\s()<>]+|(?:\(?:[^\s()<>]+\)))?\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))?/g;
+
+async function processContent(content: string) {
+  const links = content.match(LINK_REGEX) || [];
+  // determine if link is media or document
+  // youtube and .gif links are media
+  // everything else is a document
+  const mediaLinks: string[] = [];
+  const documentLinks: string[] = [];
+
+  for (const link of links) {
+    let url: URL;
+    try {
+      url = new URL(link);
+    } catch (e) {
+      url = new URL(`https://${link}`);
+    }
+    const isYouTube =
+      (url.hostname === "youtube.com" || url.hostname === "www.youtube.com") &&
+      url.pathname === "/watch";
+    if (isYouTube || (await isGif(url))) {
+      mediaLinks.push(link);
+      continue;
+    }
+    documentLinks.push(link);
+  }
+
+  let postImage: null | string = null;
+  if (links[0]) {
+    const response = await fetch(links[0], { method: "GET" });
+    const $ = cheerio.load(await response.text());
+    postImage = $('head meta[property="og:image"]').attr("content") ?? null;
+  }
+
+  return { mediaLinks, documentLinks, postImage, content };
+}
+
+// const a = await processContent(
+//   "https://youtube.com/watch?v=9bZkp7q19f0   https://media.giphy.com/media/dXKiD8XysOuhFAJB1f/giphy.gif"
+// );
+const b = await processContent(
+  "check out this cool link! https://www.youtube.com/watch?v=9bZkp7q19f0"
+);
+// const c = await processContent(
+//   "a 404 https://media.giphy.com/media/3o7TKSjRrfIPjeiVyQ/giphy.gif"
+// );
+// const d = await processContent(
+//   "https://media.giphy.com/media/dXKiD8XysOuhFAJB1f/giphy.gif"
+// );
+// const e = await processContent("no links here!");
+// const g = await processContent("google.com");
+
+// console.log(a);
+console.log(b);
+// console.log(c);
+// console.log(d);
+// console.log(e);
+// console.log(g);
+
+async function isGif(url: URL) {
+  const response = await fetch(url.toString(), { method: "HEAD" });
+  const contentType = response.headers.get("content-type");
+  // TODO: add other media types
+  return contentType?.startsWith("image/gif");
+}

@@ -30,7 +30,7 @@ export default function Navbar() {
 
 function UserProfileMenu({ userId }: { userId: string }) {
   return (
-    <div className="dropdown-end dropdown">
+    <div className="dropdown dropdown-end">
       <label tabIndex={0} className="avatar btn btn-ghost btn-circle">
         <div className="w-10 rounded-full">
           <Image
