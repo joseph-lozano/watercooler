@@ -55,6 +55,7 @@ async function processContent(content: string) {
   // everything else is a document
   const mediaLinks: string[] = [];
   const documentLinks: string[] = [];
+  let processedContent = escape(content);
 
   for (const link of links) {
     let url: URL;
@@ -63,6 +64,8 @@ async function processContent(content: string) {
     } catch (e) {
       url = new URL(`https://${link}`);
     }
+
+    processedContent = replaceWithLink(processedContent, link);
 
     const isYouTube =
       (url.hostname === "youtube.com" || url.hostname === "www.youtube.com") &&
@@ -82,5 +85,23 @@ async function processContent(content: string) {
     postImage = $('head meta[property="og:image"]').attr("content") ?? null;
   }
 
-  return { mediaLinks, documentLinks, postImage, processedContent: content };
+  console.log({ processedContent });
+  return { mediaLinks, documentLinks, postImage, processedContent };
+}
+
+function replaceWithLink(content: string, link: string) {
+  const escapedLink = escape(link);
+  return content.replaceAll(
+    link,
+    `<a class="link link-primary" href="${escapedLink}">${escapedLink}</a>`
+  );
+}
+
+function escape(htmlStr: string) {
+  return htmlStr
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }

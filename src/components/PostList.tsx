@@ -18,7 +18,7 @@ export default function PostList() {
             post.user.email ||
             ""
           }
-          content={post.content}
+          content={post.displayContent}
           createdAt={post.createdAt}
         />
       ))}
@@ -37,7 +37,7 @@ function PostItem({ author, content, createdAt }: PostItemProps) {
     <div className="card w-full bg-base-100 shadow-xl">
       <div className="card-body">
         <h2 className="card-title">{author}</h2>
-        <p>{content}</p>
+        <p dangerouslySetInnerHTML={{ __html: content }}></p>
         <div className="flex justify-end">
           <span
             className="tooltip opacity-50"
