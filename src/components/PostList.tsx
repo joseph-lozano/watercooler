@@ -1,4 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
 import { trpc } from "../utils/trpc";
+import { escape } from "@utils/string";
 
 export default function PostList() {
   const { data: posts, isLoading } = trpc.posts.getRecentPosts.useQuery();
@@ -20,6 +22,7 @@ export default function PostList() {
           }
           content={post.displayContent}
           createdAt={post.createdAt}
+          postImage={post.postImage}
         />
       ))}
     </div>
@@ -30,14 +33,23 @@ type PostItemProps = {
   author: string;
   content: string;
   createdAt: Date;
+  postImage: string | null;
 };
 
-function PostItem({ author, content, createdAt }: PostItemProps) {
+function PostItem({ author, content, createdAt, postImage }: PostItemProps) {
   return (
     <div className="card w-full bg-base-100 shadow-xl">
       <div className="card-body">
         <h2 className="card-title">{author}</h2>
         <p dangerouslySetInnerHTML={{ __html: content }}></p>
+        {/* TODO: Wrap image in a anchor tag */}
+        {postImage && (
+          <img
+            className="max-w-[100%]"
+            src={escape(postImage)}
+            alt="Image for link"
+          />
+        )}
         <div className="flex justify-end">
           <span
             className="tooltip opacity-50"

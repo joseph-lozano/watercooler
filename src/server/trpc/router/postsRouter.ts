@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 import cheerio from "cheerio";
+import { escape } from "@utils/string";
 
 export const postsRouter = router({
   getRecentPosts: protectedProcedure.query(({ ctx }) => {
@@ -71,6 +72,7 @@ async function processContent(content: string) {
       (url.hostname === "youtube.com" || url.hostname === "www.youtube.com") &&
       url.pathname === "/watch";
 
+    // TODO: change to something smarter (more content types)
     if (isYouTube) {
       mediaLinks.push(link);
       continue;
@@ -79,29 +81,21 @@ async function processContent(content: string) {
   }
 
   let postImage: null | string = null;
+
+  // TODO: go thru each link util media link or og image
   if (links[0]) {
     const response = await fetch(links[0], { method: "GET" });
     const $ = cheerio.load(await response.text());
     postImage = $('head meta[property="og:image"]').attr("content") ?? null;
   }
 
-  console.log({ processedContent });
   return { mediaLinks, documentLinks, postImage, processedContent };
 }
 
 function replaceWithLink(content: string, link: string) {
   const escapedLink = escape(link);
   return content.replaceAll(
-    link,
+    escapedLink,
     `<a class="link link-primary" href="${escapedLink}">${escapedLink}</a>`
   );
-}
-
-function escape(htmlStr: string) {
-  return htmlStr
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }
