@@ -21,17 +21,14 @@ export const postsRouter = router({
   createPost: protectedProcedure
     .input(z.object({ content: z.string().min(1) }))
     .mutation(async ({ input, ctx }) => {
-      const { mediaLinks, documentLinks, postImage, processedContent } =
-        await processContent(input.content);
+      const { processedContent, ...data } = await processContent(input.content);
 
       const userId = ctx.session.user.id;
       return ctx.prisma.post.create({
         data: {
-          content: input.content,
+          ...data,
           displayContent: processedContent,
-          mediaLinks,
-          documentLinks,
-          postImage,
+          content: input.content,
           userId: userId,
         },
         include: {
@@ -54,42 +51,29 @@ async function processContent(content: string) {
   // determine if link is media or document
   // youtube and .gif links are media
   // everything else is a document
-  const mediaLinks: string[] = [];
-  const documentLinks: string[] = [];
   let processedContent = escape(content);
 
   for (const link of links) {
-    let url: URL;
-    try {
-      url = new URL(link);
-    } catch (e) {
-      url = new URL(`https://${link}`);
-    }
-
     processedContent = replaceWithLink(processedContent, link);
-
-    const isYouTube =
-      (url.hostname === "youtube.com" || url.hostname === "www.youtube.com") &&
-      url.pathname === "/watch";
-
-    // TODO: change to something smarter (more content types)
-    if (isYouTube) {
-      mediaLinks.push(link);
-      continue;
-    }
-    documentLinks.push(link);
   }
-
-  let postImage: null | string = null;
 
   // TODO: go thru each link util media link or og image
   if (links[0]) {
-    const response = await fetch(links[0], { method: "GET" });
-    const $ = cheerio.load(await response.text());
-    postImage = $('head meta[property="og:image"]').attr("content") ?? null;
+    const data = await getPreviewData(links[0]);
+    return {
+      ...data,
+      previewLink: links[0],
+      processedContent,
+    };
   }
 
-  return { mediaLinks, documentLinks, postImage, processedContent };
+  return {
+    previewImage: null,
+    previewLink: null,
+    previewTitle: null,
+    previewDesc: null,
+    processedContent,
+  };
 }
 
 function replaceWithLink(content: string, link: string) {
@@ -98,4 +82,40 @@ function replaceWithLink(content: string, link: string) {
     escapedLink,
     `<a class="link link-primary" href="${escapedLink}">${escapedLink}</a>`
   );
+}
+
+const SUPPORTED_MIME_TYPES = [
+  "image/gif",
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/svg+xml",
+  "image/webp",
+];
+
+async function getPreviewData(url: string) {
+  const headResponse = await fetch(url, { method: "HEAD" });
+  const contentType = headResponse.headers.get("content-type");
+  if (contentType?.startsWith("text/html")) {
+    const response = await fetch(url, { method: "GET" });
+    const $ = cheerio.load(await response.text());
+    return {
+      previewImage: $('head meta[property="og:image"]').attr("content") ?? null,
+      previewTitle: $('head meta[property="og:title"]').attr("content") ?? null,
+      previewDesc:
+        $('head meta[property="og:description"]').attr("content") ?? null,
+    };
+  } else if (SUPPORTED_MIME_TYPES.includes(contentType || "")) {
+    return {
+      previewImage: url,
+      previewTitle: null,
+      previewDesc: null,
+    };
+  } else {
+    return {
+      previewImage: null,
+      previewTitle: null,
+      previewDesc: null,
+    };
+  }
 }
