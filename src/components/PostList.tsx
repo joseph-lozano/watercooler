@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import { trpc } from "../utils/trpc";
-import { escape } from "@utils/string";
 
 export default function PostList() {
   const { data: posts, isLoading } = trpc.posts.getRecentPosts.useQuery();
@@ -24,6 +23,7 @@ export default function PostList() {
           createdAt={post.createdAt}
           previewTitle={post.previewTitle}
           previewImage={post.previewImage}
+          previewDesc={post.previewDesc}
         />
       ))}
     </div>
@@ -36,6 +36,7 @@ type PostItemProps = {
   createdAt: Date;
   previewTitle: string | null;
   previewImage: string | null;
+  previewDesc: string | null;
 };
 
 function PostItem({
@@ -44,22 +45,32 @@ function PostItem({
   createdAt,
   previewImage,
   previewTitle,
+  previewDesc,
 }: PostItemProps) {
   return (
     <div className="card w-full bg-base-100 shadow-xl">
       <div className="card-body">
         <h2 className="card-title">{author}</h2>
-        <p dangerouslySetInnerHTML={{ __html: content }}></p>
-        <div className="rounded border">
-          {previewImage && (
-            <img
-              className="max-w-[100%]"
-              src={escape(previewImage)}
-              alt="Image for link"
-            />
-          )}
-          {previewTitle && <div className="p-2">{previewTitle}</div>}
-        </div>
+        <p
+          className="break-words"
+          dangerouslySetInnerHTML={{ __html: content }}
+        ></p>
+        {previewTitle || previewImage || previewDesc ? (
+          <div className="overflow-hidden rounded-2xl border border-gray-500">
+            {previewImage && (
+              <img
+                className="max-w-[100%]"
+                src={previewImage}
+                alt="Image for link"
+              />
+            )}
+            {previewTitle && (
+              <div className="truncate p-6 font-semibold">{previewTitle}</div>
+            )}
+
+            {previewDesc && <div className="truncate p-6">{previewDesc}</div>}
+          </div>
+        ) : null}
         <div className="flex justify-end">
           <span
             className="tooltip opacity-50"

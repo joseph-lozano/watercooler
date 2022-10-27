@@ -1,7 +1,7 @@
+import { escape } from "@utils/string";
+import cheerio from "cheerio";
 import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
-import cheerio from "cheerio";
-import { escape } from "@utils/string";
 
 export const postsRouter = router({
   getRecentPosts: protectedProcedure.query(({ ctx }) => {
@@ -48,6 +48,7 @@ const LINK_REGEX =
 
 async function processContent(content: string) {
   const links = content.match(LINK_REGEX) || [];
+
   // determine if link is media or document
   // youtube and .gif links are media
   // everything else is a document
@@ -62,7 +63,6 @@ async function processContent(content: string) {
     const data = await getPreviewData(links[0]);
     return {
       ...data,
-      previewLink: links[0],
       processedContent,
     };
   }
@@ -93,8 +93,33 @@ const SUPPORTED_MIME_TYPES = [
   "image/webp",
 ];
 
-async function getPreviewData(url: string) {
-  const headResponse = await fetch(url, { method: "HEAD" });
+async function getPreviewData(link: string) {
+  let url: URL;
+  try {
+    url = new URL(link);
+  } catch {
+    try {
+      url = new URL(`https://${link}`);
+    } catch {
+      return {
+        previewImage: null,
+        previewTitle: null,
+        previewDesc: null,
+      };
+    }
+  }
+  console.log("------------A");
+  let headResponse: Response;
+  try {
+    headResponse = await fetch(url, { method: "HEAD" });
+  } catch {
+    return {
+      previewImage: null,
+      previewTitle: null,
+      previewDesc: null,
+    };
+  }
+  console.log("--------------B");
   const contentType = headResponse.headers.get("content-type");
   if (contentType?.startsWith("text/html")) {
     const response = await fetch(url, { method: "GET" });
