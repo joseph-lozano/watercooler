@@ -64,11 +64,16 @@ function PostItem({
                 alt="Image for link"
               />
             )}
-            {previewTitle && (
-              <div className="truncate p-6 font-semibold">{previewTitle}</div>
-            )}
-
-            {previewDesc && <div className="truncate p-6">{previewDesc}</div>}
+            <div className="space-y-2 py-4">
+              {previewTitle && (
+                <div className="truncate px-6 font-semibold">
+                  {previewTitle}
+                </div>
+              )}
+              {previewDesc && (
+                <div className="truncate px-6">{previewDesc}</div>
+              )}
+            </div>
           </div>
         ) : null}
         <div className="flex justify-end">
