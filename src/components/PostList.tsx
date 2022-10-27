@@ -24,6 +24,7 @@ export default function PostList() {
           previewTitle={post.previewTitle}
           previewImage={post.previewImage}
           previewDesc={post.previewDesc}
+          previewLink={post.previewLink}
         />
       ))}
     </div>
@@ -37,6 +38,7 @@ type PostItemProps = {
   previewTitle: string | null;
   previewImage: string | null;
   previewDesc: string | null;
+  previewLink: string | null;
 };
 
 function PostItem({
@@ -46,6 +48,7 @@ function PostItem({
   previewImage,
   previewTitle,
   previewDesc,
+  previewLink,
 }: PostItemProps) {
   return (
     <div className="card w-full bg-base-100 shadow-xl">
@@ -57,23 +60,25 @@ function PostItem({
         ></p>
         {previewTitle || previewImage || previewDesc ? (
           <div className="overflow-hidden rounded-2xl border border-gray-500">
-            {previewImage && (
-              <img
-                className="max-w-[100%]"
-                src={previewImage}
-                alt="Image for link"
-              />
-            )}
-            <div className="space-y-2 py-4">
-              {previewTitle && (
-                <div className="truncate px-6 font-semibold">
-                  {previewTitle}
-                </div>
+            <a href={previewLink || "#"}>
+              {previewImage && (
+                <img
+                  className="max-w-[100%]"
+                  src={previewImage}
+                  alt="Image for link"
+                />
               )}
-              {previewDesc && (
-                <div className="truncate px-6">{previewDesc}</div>
-              )}
-            </div>
+              <div className="space-y-2 py-4">
+                {previewTitle && (
+                  <div className="truncate px-6 font-semibold">
+                    {previewTitle}
+                  </div>
+                )}
+                {previewDesc && (
+                  <div className="truncate px-6">{previewDesc}</div>
+                )}
+              </div>
+            </a>
           </div>
         ) : null}
         <div className="flex justify-end">

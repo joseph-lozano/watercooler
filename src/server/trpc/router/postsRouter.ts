@@ -78,9 +78,22 @@ async function processContent(content: string) {
 
 function replaceWithLink(content: string, link: string) {
   const escapedLink = escape(link);
+  let url: URL | null = null;
+  try {
+    url = new URL(link);
+  } catch {
+    try {
+      url = new URL(`https://${link}`);
+    } catch {
+      url = null;
+    }
+  }
+
   return content.replaceAll(
     escapedLink,
-    `<a class="link link-primary" href="${escapedLink}">${escapedLink}</a>`
+    `<a class="link link-primary" href="${
+      url?.href || escapedLink
+    }">${escapedLink}</a>`
   );
 }
 
@@ -102,29 +115,30 @@ async function getPreviewData(link: string) {
       url = new URL(`https://${link}`);
     } catch {
       return {
+        previewLink: null,
         previewImage: null,
         previewTitle: null,
         previewDesc: null,
       };
     }
   }
-  console.log("------------A");
   let headResponse: Response;
   try {
     headResponse = await fetch(url, { method: "HEAD" });
   } catch {
     return {
+      previewLink: url.href,
       previewImage: null,
       previewTitle: null,
       previewDesc: null,
     };
   }
-  console.log("--------------B");
   const contentType = headResponse.headers.get("content-type");
   if (contentType?.startsWith("text/html")) {
     const response = await fetch(url, { method: "GET" });
     const $ = cheerio.load(await response.text());
     return {
+      previewLink: url.href,
       previewImage: $('head meta[property="og:image"]').attr("content") ?? null,
       previewTitle: $('head meta[property="og:title"]').attr("content") ?? null,
       previewDesc:
